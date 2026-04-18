@@ -138,9 +138,10 @@ function Admin() {
         {blogs.map((blog) => (
           <div className="second-div" key={blog._id}>
             <h1>{blog.title}</h1>
-            <p>Posted by <span>{blog.author?.name}</span></p>
+            <p>
+              Posted by <span>{blog.author?.name}</span>
+            </p>
             <p>{blog.content}</p>
-      
 
             <div className="like-comment">
               <button onClick={() => likeBlog(blog._id)}>
@@ -187,7 +188,10 @@ function Admin() {
                 ?.slice(-2)
                 .reverse()
                 .map((comment, index) => (
-                  <p key={index}>Comment: {comment.text}</p>
+                  <p key={index}>
+                    <strong>{comment.user?.name || "User"}:</strong>{" "}
+                    {comment.text}
+                  </p>
                 ))}
             </div>
           </div>

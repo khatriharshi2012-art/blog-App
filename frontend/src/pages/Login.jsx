@@ -1,12 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import "../App.css";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      window.location.replace("/");
+    }
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      alert("All fields are required");
+      return;
+    }
 
     try {
       const res = await fetch("http://localhost:3000/user/login", {
@@ -21,8 +36,6 @@ function Login() {
       const user = data?.data?.user;
       const accessToken = data?.data?.accessToken;
 
-      console.log(data);
-
       if (!res.ok) {
         alert(data.message || "Login failed");
         return;
@@ -33,15 +46,14 @@ function Login() {
         return;
       }
 
-      // save token
       localStorage.setItem("token", accessToken);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // redirect
+      // ✅ FIXED redirect
       if (user.role === "admin") {
-        window.location.href = "/admin";
+        navigate("/admin", { replace: true });
       } else {
-        window.location.href = "/";
+        navigate("/", { replace: true });
       }
     } catch (err) {
       console.error(err);
@@ -72,7 +84,7 @@ function Login() {
       </form>
 
       <p>
-        Don&apos;t have an account? <a href="/register">Sign up</a>
+        Don&apos;t have an account? <Link to="/register">Sign up</Link>
       </p>
     </div>
   );

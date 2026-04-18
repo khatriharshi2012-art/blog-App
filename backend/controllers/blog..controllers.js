@@ -2,19 +2,19 @@ const Blog = require("../models/blog.models");
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content} = req.body || {};
+    const { title, content } = req.body || {};
 
     if (!title || !content) {
       return res.status(400).json({
         status: false,
-        message: "title , email and author are required fields",
+        message: "title and content are required fields",
       });
     }
 
     const newBlog = await Blog.create({
       title,
       content,
-      author : req.user.id,
+      author: req.user.id,
     });
 
     return res.status(201).json({
@@ -34,15 +34,9 @@ exports.createBlog = async (req, res) => {
 
 exports.getBlog = async (req, res) => {
   try {
-    const page = Number(req?.query?.page || req?.body?.page || 1);
-    const pageSize = Number(req?.query?.pageSize || req?.body?.pageSize || 10);
-
-    const skipLimit = (page - 1) * pageSize;
-
-    const blog = await Blog.find({}).populate("author", "name")
-      .sort({ createdAt: -1 })
-      .limit(pageSize)
-      .skip(skipLimit);
+    const blog = await Blog.find({})
+      .populate("author", "name")
+      .sort({ createdAt: -1 });
 
     if (blog?.length > 0) {
       return res.status(200).json({
@@ -76,7 +70,7 @@ exports.getBlogbyId = async (req, res) => {
       });
     }
 
-    const result = await Blog.findById(id);
+    const result = await Blog.findById(id).populate("author", "name");
 
     if (result) {
       return res.status(200).json({
@@ -184,7 +178,6 @@ exports.likeBlog = async (req, res) => {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-    // prevent duplicate likes
     if (!blog.likes.includes(req.user.id)) {
       blog.likes.push(req.user.id);
     }
@@ -201,7 +194,6 @@ exports.likeBlog = async (req, res) => {
   }
 };
 
-// 💬 COMMENT BLOG
 exports.commentBlog = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -214,7 +206,9 @@ exports.commentBlog = async (req, res) => {
       return res.status(400).json({ message: "Blog id and text are required" });
     }
 
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id)
+      .populate("author", "name")
+      .populate("comments.user", "name");
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });

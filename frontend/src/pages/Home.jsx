@@ -97,7 +97,9 @@ function Home() {
         {blogs.map((blog) => (
           <div className="first-div" key={blog._id}>
             <h1>{blog.title}</h1>
-            <p>Posted by <span>{blog.author?.name}</span></p>
+            <p>
+              Posted by <span>{blog.author?.name}</span>
+            </p>
             <p>{blog.content}</p>
 
             <div className="like-comment">
@@ -106,9 +108,7 @@ function Home() {
                 <p>{blog.likes?.length || 0} Likes</p>
               </button>
 
-              <button
-                onClick={() => toggleCommentBox(blog._id)}
-              >
+              <button onClick={() => toggleCommentBox(blog._id)}>
                 <i className="fa-solid fa-comment"></i>
                 <p>{blog.comments?.length || 0} Comments</p>
               </button>
@@ -135,7 +135,10 @@ function Home() {
                 ?.slice(-2)
                 .reverse()
                 .map((comment, index) => (
-                  <p key={index}>Comment: {comment.text}</p>
+                  <p key={index}>
+                    <strong>{comment.user?.name || "User"}:</strong>{" "}
+                    {comment.text}
+                  </p>
                 ))}
             </div>
           </div>

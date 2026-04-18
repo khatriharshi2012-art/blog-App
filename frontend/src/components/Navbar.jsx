@@ -14,15 +14,15 @@ function Navbar() {
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user"); // ✅ better than clear()
+    localStorage.removeItem("user");
     setUser(null);
-    navigate("/", { replace: true }); // ✅ go to home & prevent back
+    navigate("/", { replace: true });
   };
 
   return (
     <div className="navbar">
       <div className="navbar-div">
-        <h1 style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+        <h1 onClick={() => navigate("/", { replace: true })}>
           Blog
         </h1>
 
@@ -30,7 +30,7 @@ function Navbar() {
           {user ? (
             <>
               {user.role === "admin" && (
-                <button onClick={() => navigate("/admin")}>
+                <button onClick={() => navigate("/admin", { replace: true })}>
                   Admin
                 </button>
               )}
@@ -39,10 +39,27 @@ function Navbar() {
             </>
           ) : (
             <>
-              <button onClick={() => navigate("/login", { replace: true })}>
+              <button
+                onClick={() => {
+                  if (localStorage.getItem("token")) {
+                    navigate("/", { replace: true });
+                  } else {
+                    navigate("/login", { replace: true });
+                  }
+                }}
+              >
                 Login
               </button>
-              <button onClick={() => navigate("/register", { replace: true })}>
+
+              <button
+                onClick={() => {
+                  if (localStorage.getItem("token")) {
+                    navigate("/", { replace: true });
+                  } else {
+                    navigate("/register", { replace: true });
+                  }
+                }}
+              >
                 Sign Up
               </button>
             </>
