@@ -1,18 +1,19 @@
-import axios from "axios";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL?.trim() || "http://localhost:3000";
 
-const API = axios.create({
-  baseURL: "http://localhost:3000/api",
-});
+export const buildApiUrl = (path) => {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${API_BASE_URL}${normalizedPath}`;
+};
 
-// ✅ attach token automatically
-API.interceptors.request.use((req) => {
+export const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
 
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
+  return token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
+};
 
-  return req;
-});
-
-export default API;
+export default API_BASE_URL;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../App.css";
+import { buildApiUrl } from "../utils/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/user/login", {
+      const res = await fetch(buildApiUrl("/user/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

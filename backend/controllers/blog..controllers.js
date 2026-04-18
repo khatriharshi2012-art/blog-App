@@ -36,6 +36,7 @@ exports.getBlog = async (req, res) => {
   try {
     const blog = await Blog.find({})
       .populate("author", "name")
+      .populate("comments.user")
       .sort({ createdAt: -1 });
 
     if (blog?.length > 0) {
@@ -70,7 +71,9 @@ exports.getBlogbyId = async (req, res) => {
       });
     }
 
-    const result = await Blog.findById(id).populate("author", "name");
+    const result = await Blog.findById(id)
+      .populate("author", "name")
+      .populate("comments.user");
 
     if (result) {
       return res.status(200).json({
@@ -206,7 +209,7 @@ exports.commentBlog = async (req, res) => {
       return res.status(400).json({ message: "Blog id and text are required" });
     }
 
-    const blog = await Blog.findById(id)
+    let blog = await Blog.findById(id)
       .populate("author", "name")
       .populate("comments.user", "name");
 
@@ -220,6 +223,9 @@ exports.commentBlog = async (req, res) => {
     });
 
     await blog.save();
+    blog = await Blog.findById(id)
+      .populate("author", "name")
+      .populate("comments.user");
 
     res.status(200).json({
       success: true,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "../App.css";
+import { buildApiUrl, getAuthHeaders } from "../utils/api";
 
 function Admin() {
   const [blogs, setBlogs] = useState([]);
@@ -8,20 +9,18 @@ function Admin() {
   const [commentText, setCommentText] = useState({});
   const [activeCommentBox, setActiveCommentBox] = useState({});
 
-  const token = localStorage.getItem("token");
-
   const getBlogs = async () => {
-    const res = await fetch("http://localhost:3000/blog/get-blog");
+    const res = await fetch(buildApiUrl("/blog/get-blog"));
     const data = await res.json();
     setBlogs(data?.data || []);
   };
 
   const createBlog = async () => {
-    const res = await fetch("http://localhost:3000/blog/create-blog", {
+    const res = await fetch(buildApiUrl("/blog/create-blog"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ title, content }),
     });
@@ -39,11 +38,11 @@ function Admin() {
   };
 
   const deleteBlog = async (id) => {
-    const res = await fetch("http://localhost:3000/blog/delete-blog", {
+    const res = await fetch(buildApiUrl("/blog/delete-blog"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ id }),
     });
@@ -59,11 +58,11 @@ function Admin() {
   };
 
   const likeBlog = async (id) => {
-    const res = await fetch("http://localhost:3000/blog/like-blog", {
+    const res = await fetch(buildApiUrl("/blog/like-blog"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ id }),
     });
@@ -86,11 +85,11 @@ function Admin() {
       return;
     }
 
-    const res = await fetch("http://localhost:3000/blog/comment-blog", {
+    const res = await fetch(buildApiUrl("/blog/comment-blog"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ id, text }),
     });

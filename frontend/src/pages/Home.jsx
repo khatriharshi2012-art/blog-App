@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { buildApiUrl, getAuthHeaders } from "../utils/api";
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
@@ -11,7 +12,7 @@ function Home() {
   const showAuthAlert = () => alert("Please login or sign up first");
 
   const getBlogs = async () => {
-    const res = await fetch("http://localhost:3000/blog/get-blog");
+    const res = await fetch(buildApiUrl("/blog/get-blog"));
     const data = await res.json();
     setBlogs(data?.data || []);
   };
@@ -19,13 +20,11 @@ function Home() {
   const likeBlog = async (id) => {
     if (!isLoggedIn()) return showAuthAlert();
 
-    const token = getToken();
-
-    const res = await fetch("http://localhost:3000/blog/like-blog", {
+    const res = await fetch(buildApiUrl("/blog/like-blog"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ id }),
     });
@@ -43,8 +42,6 @@ function Home() {
   const addComment = async (id) => {
     if (!isLoggedIn()) return showAuthAlert();
 
-    const token = getToken();
-
     const text = commentText[id]?.trim();
 
     if (!text) {
@@ -52,11 +49,11 @@ function Home() {
       return;
     }
 
-    const res = await fetch("http://localhost:3000/blog/comment-blog", {
+    const res = await fetch(buildApiUrl("/blog/comment-blog"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ id, text }),
     });
